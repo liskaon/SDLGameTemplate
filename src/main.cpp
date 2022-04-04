@@ -2,10 +2,10 @@
 #include "sprite.h"
 #include "SDL.h"
 #include "SDL_image.h"
-#include "SDL_mixer.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "shot.h"
 
 // Forward function declarations
 void Update(float dt);
@@ -16,6 +16,11 @@ void RenderFrame(float dt);
 
 // Street texture
 Sprite street;
+Sprite hracovaLod;
+
+const int hracSirka = 100;
+const int hracVyska = 100;
+
 
 //=============================================================================
 int main(int argc, char* argv[])
@@ -29,25 +34,100 @@ int main(int argc, char* argv[])
 	{
 		return 1;
 	}
-
+	
 	street = LoadSprite("assets/cyberpunk-street.png");
-
+	hracovaLod = LoadSprite("assets/player.png");
 	// Push functions to the game loop
 	StartLoop(Update, RenderFrame);
 
+
 	FreeSprite(street);
+	FreeSprite(hracovaLod);
 	CleanUp();
 	return 0;
 }
 
 //=============================================================================
+SDL_Rect hrac = { 30, 0, hracSirka, hracVyska };
+Shot* shot;
+int speed = 200;
 
 void Update(float dt)
 {
+	if (IsKeyDown(SDL_SCANCODE_LEFT))
+	{
+		
+		if (IsKeyDown(SDL_SCANCODE_LSHIFT))
+		{
+			hrac.x -= (int)(speed * dt * 2 + 0.5f);
+		}
+		else
+		{
+			hrac.x -= (int)(speed * dt + 0.5f);
+		}
+		
+	}
+		
+	else if (IsKeyDown(SDL_SCANCODE_RIGHT))
+	{
+		if (IsKeyDown(SDL_SCANCODE_LSHIFT))
+		{
+			hrac.x += (int)(speed * dt + 0.5f);
+		}
+		hrac.x += (int)(speed * dt + 0.5f);
+	}
+		
+
+	if (IsKeyDown(SDL_SCANCODE_UP))
+	{
+		if (IsKeyDown(SDL_SCANCODE_LSHIFT))
+		{
+			hrac.y -= (int)(speed * dt + 0.5f);
+		}
+			hrac.y -= (int)(speed * dt + 0.5f);
+	}
+		
+	else if (IsKeyDown(SDL_SCANCODE_DOWN))
+	{
+		if (IsKeyDown(SDL_SCANCODE_LSHIFT))
+		{
+			hrac.y += (int)(speed * dt + 0.5f);
+		}
+		hrac.y += (int)(speed * dt + 0.5f);
+	}
+		
+
+
+	if (hrac.x + hracVyska > WINDOW_WIDTH)
+	{
+		hrac.x = WINDOW_WIDTH - hrac.w;
+	}
+	else if (hrac.x < 0)
+	{
+		hrac.x = 0;
+	}
+
+	if (hrac.y < 0)
+	{
+		hrac.y = 0;
+	}
+	else if (hrac.y + hracVyska > WINDOW_HEIGHT)
+	{
+		hrac.y = WINDOW_HEIGHT - hracVyska;
+	}
+
+
 	// Change subsystem of project from Windows to Console
 	// in order to see the stderr output
 	if (IsKeyDown(SDL_SCANCODE_ESCAPE))
+	{
 		ExitGame();
+	}
+	if (IsKeyDown(SDL_SCANCODE_SPACE))
+	{
+		shot = new Shot(gRenderer, hrac.x, hrac.y);
+	}
+
 }
 
 void RenderFrame(float interpolation)
@@ -58,6 +138,7 @@ void RenderFrame(float interpolation)
 
 	// Draw sprite (scaled by factor of 3)
 	int pixelAmp = 3;
+	
 	SDL_Rect backgroundRect = {
 		0,
 		0,
@@ -65,4 +146,5 @@ void RenderFrame(float interpolation)
 		street.sourceRect.h * pixelAmp
 	};
 	SDL_RenderCopy(gRenderer, street.texture, NULL, &backgroundRect);
+	SDL_RenderCopy(gRenderer, hracovaLod.texture, NULL, &hrac);
 }
