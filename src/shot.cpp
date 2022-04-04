@@ -19,6 +19,7 @@ Shot::Shot(SDL_Renderer* ren, const int parX, const int parY) :
 
 Shot::~Shot()
 {
+	FreeSprite(ObjTexture);
 }
 
 void Shot::Update()

@@ -125,7 +125,14 @@ void Update(float dt)
 	}
 	if (IsKeyDown(SDL_SCANCODE_SPACE))
 	{
+		if (shot)
+			delete shot;
 		shot = new Shot(gRenderer, hrac.x, hrac.y);
+	}
+	if (IsKeyDown(SDL_SCANCODE_BACKSPACE))
+	{
+		delete shot;
+		shot = NULL;
 	}
 
 }
@@ -146,5 +153,9 @@ void RenderFrame(float interpolation)
 		street.sourceRect.h * pixelAmp
 	};
 	SDL_RenderCopy(gRenderer, street.texture, NULL, &backgroundRect);
+
+	if (shot)
+		shot->Render();
+
 	SDL_RenderCopy(gRenderer, hracovaLod.texture, NULL, &hrac);
 }
