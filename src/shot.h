@@ -11,6 +11,7 @@ public:
 
 	void Render();
 	void Update();
+	const int xOffset = 5;
 private:
 
 	int y;

@@ -49,11 +49,23 @@ int main(int argc, char* argv[])
 
 //=============================================================================
 SDL_Rect hrac = { 30, 0, hracSirka, hracVyska };
-Shot* shot;
+// Shot* shot;
+Shot* shots[3] = { NULL, NULL, NULL };
 int speed = 200;
-
+bool moved = false;
+bool strelaExistuje = false;
 void Update(float dt)
 {
+	moved = false;
+	strelaExistuje = false;
+	for (int i = 0; i < 3; i++)
+	{
+		if (shots[i] != NULL)
+		{
+			strelaExistuje = true;
+			break;
+		}
+	}
 	if (IsKeyDown(SDL_SCANCODE_LEFT))
 	{
 		
@@ -65,7 +77,7 @@ void Update(float dt)
 		{
 			hrac.x -= (int)(speed * dt + 0.5f);
 		}
-		
+		moved = true;
 	}
 		
 	else if (IsKeyDown(SDL_SCANCODE_RIGHT))
@@ -75,6 +87,7 @@ void Update(float dt)
 			hrac.x += (int)(speed * dt + 0.5f);
 		}
 		hrac.x += (int)(speed * dt + 0.5f);
+		moved = true;
 	}
 		
 
@@ -85,6 +98,7 @@ void Update(float dt)
 			hrac.y -= (int)(speed * dt + 0.5f);
 		}
 			hrac.y -= (int)(speed * dt + 0.5f);
+			moved = true;
 	}
 		
 	else if (IsKeyDown(SDL_SCANCODE_DOWN))
@@ -94,6 +108,7 @@ void Update(float dt)
 			hrac.y += (int)(speed * dt + 0.5f);
 		}
 		hrac.y += (int)(speed * dt + 0.5f);
+		moved = true;
 	}
 		
 
@@ -125,16 +140,42 @@ void Update(float dt)
 	}
 	if (IsKeyDown(SDL_SCANCODE_SPACE))
 	{
-		if (shot)
-			delete shot;
-		shot = new Shot(gRenderer, hrac.x, hrac.y);
+		for (int i = 0; i < 3; i++)
+		{
+			if (shots[i] == NULL)
+			{
+				shots[i] = new Shot(gRenderer, hrac.x + (hracSirka / 2), hrac.y);
+			}
+		}
+		
+			
+		
+		
+		 
+			
 	}
 	if (IsKeyDown(SDL_SCANCODE_BACKSPACE))
 	{
-		delete shot;
-		shot = NULL;
+		for (int i = 0; i < 3; i++)
+		{
+			shots[i] = NULL;
+		}
+		
 	}
 
+	//UPDATE STRELY
+	if (moved)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (shots[i] != NULL)
+			{
+				shots[i]->Update();
+			}
+			
+		}
+		
+	}
 }
 
 void RenderFrame(float interpolation)
@@ -154,8 +195,14 @@ void RenderFrame(float interpolation)
 	};
 	SDL_RenderCopy(gRenderer, street.texture, NULL, &backgroundRect);
 
-	if (shot)
-		shot->Render();
+	
+	for (int i = 0; i < 3; i++)
+	{
+		if (shots[i] != NULL)
+			shots[i]->Render();
+	}
+	
+	
 
 	SDL_RenderCopy(gRenderer, hracovaLod.texture, NULL, &hrac);
 }

@@ -11,10 +11,12 @@ Shot::Shot(SDL_Renderer* ren, const int parX, const int parY) :
 	srcRect.w = 10;
 	srcRect.x = 0;
 	srcRect.y = 0;
-	x = parX;
+	x = parX - xOffset;
 	y = parY;
 	destRect.h = 30;
 	destRect.w = 10;
+	destRect.x = x;
+	destRect.y = parY;
 }
 
 Shot::~Shot()
@@ -24,8 +26,8 @@ Shot::~Shot()
 
 void Shot::Update()
 {
-	destRect.x = x;
-	destRect.y += 10;
+	
+	destRect.y -= 10;
 }
 
 void Shot::Render()
